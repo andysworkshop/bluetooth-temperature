@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : App/hts_app.h
-  * Description        : Header for hts_application.c module
-  ******************************************************************************
+ ******************************************************************************
+ * File Name          : App/p2p_server_app.h
+ * Description        : Header for p2p_server_app.c module
+ ******************************************************************************
   * @attention
   *
   * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
@@ -19,12 +19,11 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __HTS_APP_H
-#define __HTS_APP_H
+#ifndef __P2P_SERVER_APP_H
+#define __P2P_SERVER_APP_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -35,6 +34,17 @@ extern "C"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
+typedef enum
+{
+  PEER_CONN_HANDLE_EVT,
+  PEER_DISCON_HANDLE_EVT,
+} P2PS_APP__Opcode_Notification_evt_t;
+
+typedef struct
+{
+  P2PS_APP__Opcode_Notification_evt_t   P2P_Evt_Opcode;
+  uint16_t                              ConnectionHandle;
+}P2PS_APP_ConnHandle_Not_evt_t;
 /* USER CODE BEGIN ET */
 
 /* USER CODE END ET */
@@ -55,11 +65,8 @@ extern "C"
 /* USER CODE END EM */
 
 /* Exported functions ---------------------------------------------*/
-void HTSAPP_Init(void);
-void HTSAPP_Measurement(void);
-void HTSAPP_IntermediateTemperature(void);
-void HTSAPP_MeasurementInterval(void);
-void HTSAPP_Profile_UpdateChar(void);
+  void P2PS_APP_Init( void );
+  void P2PS_APP_Notification( P2PS_APP_ConnHandle_Not_evt_t *pNotification );
 /* USER CODE BEGIN EF */
 
 /* USER CODE END EF */
@@ -68,6 +75,6 @@ void HTSAPP_Profile_UpdateChar(void);
 }
 #endif
 
-#endif /*__HTS_APP_H */
+#endif /*__P2P_SERVER_APP_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

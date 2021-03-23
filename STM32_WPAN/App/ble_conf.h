@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
  ******************************************************************************
   * File Name          : App/ble_conf.h
@@ -16,6 +17,7 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef BLE_CONF_H
@@ -54,58 +56,17 @@
 #define BLE_CFG_CLT_MAX_NBR_CB                                                 0
 
 /******************************************************************************
- * Device Information Service (DIS)
- ******************************************************************************/
-/**< Options: Supported(1) or Not Supported(0) */
-#define BLE_CFG_DIS_MANUFACTURER_NAME_STRING                                   1
-#define BLE_CFG_DIS_MODEL_NUMBER_STRING                                        0
-#define BLE_CFG_DIS_SERIAL_NUMBER_STRING                                       0
-#define BLE_CFG_DIS_HARDWARE_REVISION_STRING                                   0
-#define BLE_CFG_DIS_FIRMWARE_REVISION_STRING                                   0
-#define BLE_CFG_DIS_SOFTWARE_REVISION_STRING                                   0
-#define BLE_CFG_DIS_SYSTEM_ID                                                  0
-#define BLE_CFG_DIS_IEEE_CERTIFICATION                                         0
-#define BLE_CFG_DIS_PNP_ID                                                     0
-
-/**
- * device information service characteristic lengths
- */
-#define BLE_CFG_DIS_SYSTEM_ID_LEN_MAX                                        (8)
-#define BLE_CFG_DIS_MODEL_NUMBER_STRING_LEN_MAX                              (32)
-#define BLE_CFG_DIS_SERIAL_NUMBER_STRING_LEN_MAX                             (32)
-#define BLE_CFG_DIS_FIRMWARE_REVISION_STRING_LEN_MAX                         (32)
-#define BLE_CFG_DIS_HARDWARE_REVISION_STRING_LEN_MAX                         (32)
-#define BLE_CFG_DIS_SOFTWARE_REVISION_STRING_LEN_MAX                         (32)
-#define BLE_CFG_DIS_MANUFACTURER_NAME_STRING_LEN_MAX                         (32)
-#define BLE_CFG_DIS_IEEE_CERTIFICATION_LEN_MAX                               (32)
-#define BLE_CFG_DIS_PNP_ID_LEN_MAX                                           (7)
-
-/******************************************************************************
- * Health Thermometer Service (HTS)
- ******************************************************************************/
-/**
- * TEMPERATURE TYPE
- * When set to '1', the TEMPERATURE TYPE characteristic shall be added and the Temperature type Info flag shall not be present
- * When set to '0', the TEMPERATURE TYPE characteristic shall not be supported and the Temperature type Info flag shall be present
- */
-
-#define BLE_CFG_HTS_TEMPERATURE_TYPE_VALUE_STATIC               0
-
-#define BLE_CFG_HTS_INTERMEDIATE_TEMPERATURE               1  /**< Intermediate Temperature characteristic */
-#define BLE_CFG_HTS_MEASUREMENT_INTERVAL               1  /**< Measurement Interval characteristic */
-#define BLE_CFG_HTS_MEASUREMENT_INTERVAL_IND_PROP               0  /**< Measurement Interval characteristic Indicate property*/
-#define BLE_CFG_HTS_MEASUREMENT_INTERVAL_WR_PROP               0  /**< Measurement Interval characteristic Write property */
-#define BLE_CFG_HTS_TIME_STAMP_FLAG               1  /**< Time Stamp Info Flag */
-#define BLE_CFG_HTS_TEMPERATURE_INTERVAL_MIN_VALUE               1  /**< Min Interval Value supported */
-#define BLE_CFG_HTS_TEMPERATURE_INTERVAL_MAX_VALUE               1 /**< Max Interval Value supported */
-
-/******************************************************************************
- * GAP Service - Apprearance
+ * GAP Service - Appearance
  ******************************************************************************/
 
 #define BLE_CFG_UNKNOWN_APPEARANCE                  (0)
 #define BLE_CFG_HR_SENSOR_APPEARANCE                (832)
 #define BLE_CFG_GAP_APPEARANCE                      (BLE_CFG_UNKNOWN_APPEARANCE)
+
+/******************************************************************************
+ * Over The Air Feature (OTA) - STM Proprietary
+ ******************************************************************************/
+#define BLE_CFG_OTA_REBOOT_CHAR         0/**< REBOOT OTA MODE CHARACTERISTIC */
 
 #endif /*BLE_CONF_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
