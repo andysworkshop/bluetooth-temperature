@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
  ***************************************************************************************
-  * File Name          : stm32_lpm_if.c
-  * Description        : Low layer function to enter/exit low power modes (stop, sleep).
+ * File Name          : stm32_lpm_if.c
+ * Description        : Low layer function to enter/exit low power modes (stop, sleep).
  ***************************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -70,6 +70,36 @@ static void Switch_On_HSI( void );
 void PWR_EnterOffMode( void )
 {
 /* USER CODE BEGIN PWR_EnterOffMode */
+  /**
+   * The systick should be disabled for the same reason than when the device enters stop mode because
+   * at this time, the device may enter either OffMode or StopMode.
+   */
+  HAL_SuspendTick();
+
+  /************************************************************************************
+   * ENTER OFF MODE
+   ***********************************************************************************/
+  /*
+   * There is no risk to clear all the WUF here because in the current implementation, this API is called
+   * in critical section. If an interrupt occurs while in that critical section before that point,
+   * the flag is set and will be cleared here but the system will not enter Off Mode
+   * because an interrupt is pending in the NVIC. The ISR will be executed when moving out
+   * of this critical section
+   */
+  LL_PWR_ClearFlag_WU();
+
+  LL_PWR_SetPowerMode( LL_PWR_MODE_STANDBY);
+
+  LL_LPM_EnableDeepSleep(); /**< Set SLEEPDEEP bit of Cortex System Control Register */
+
+  /**
+   * This option is used to ensure that store operations are completed
+   */
+#if defined ( __CC_ARM)
+  __force_stores( );
+#endif
+
+  __WFI();
 
 /* USER CODE END PWR_EnterOffMode */
 }
@@ -82,7 +112,7 @@ void PWR_EnterOffMode( void )
 void PWR_ExitOffMode( void )
 {
 /* USER CODE BEGIN PWR_ExitOffMode */
-
+  HAL_ResumeTick();
 /* USER CODE END PWR_ExitOffMode */
 }
 
@@ -95,6 +125,57 @@ void PWR_ExitOffMode( void )
 void PWR_EnterStopMode( void )
 {
 /* USER CODE BEGIN PWR_EnterStopMode */
+  /**
+   * When HAL_DBGMCU_EnableDBGStopMode() is called to keep the debugger active in Stop Mode,
+   * the systick shall be disabled otherwise the cpu may crash when moving out from stop mode
+   *
+   * When in production, the HAL_DBGMCU_EnableDBGStopMode() is not called so that the device can reach best power consumption
+   * However, the systick should be disabled anyway to avoid the case when it is about to expire at the same time the device enters
+   * stop mode ( this will abort the Stop Mode entry ).
+   */
+  HAL_SuspendTick();
+
+  /**
+   * This function is called from CRITICAL SECTION
+   */
+  while (LL_HSEM_1StepLock( HSEM, CFG_HW_RCC_SEMID))
+    ;
+
+  if (!LL_HSEM_1StepLock( HSEM, CFG_HW_ENTRY_STOP_MODE_SEMID)) {
+    if (LL_PWR_IsActiveFlag_C2DS()) {
+      /* Release ENTRY_STOP_MODE semaphore */
+      LL_HSEM_ReleaseLock( HSEM, CFG_HW_ENTRY_STOP_MODE_SEMID, 0);
+
+      /**
+       * The switch on HSI before entering Stop Mode is required
+       */
+      Switch_On_HSI();
+    }
+  } else {
+    /**
+     * The switch on HSI before entering Stop Mode is required
+     */
+    Switch_On_HSI();
+  }
+
+  /* Release RCC semaphore */
+  LL_HSEM_ReleaseLock( HSEM, CFG_HW_RCC_SEMID, 0);
+
+  /************************************************************************************
+   * ENTER STOP MODE
+   ***********************************************************************************/
+  LL_PWR_SetPowerMode( LL_PWR_MODE_STOP2);
+
+  LL_LPM_EnableDeepSleep(); /**< Set SLEEPDEEP bit of Cortex System Control Register */
+
+  /**
+   * This option is used to ensure that store operations are completed
+   */
+#if defined ( __CC_ARM)
+  __force_stores( );
+#endif
+
+  __WFI();
 
 /* USER CODE END PWR_EnterStopMode */
 }
@@ -108,6 +189,34 @@ void PWR_EnterStopMode( void )
 void PWR_ExitStopMode( void )
 {
 /* USER CODE BEGIN PWR_ExitStopMode */
+  /**
+   * This function is called from CRITICAL SECTION
+   */
+
+  /* Release ENTRY_STOP_MODE semaphore */
+  LL_HSEM_ReleaseLock( HSEM, CFG_HW_ENTRY_STOP_MODE_SEMID, 0);
+
+  while (LL_HSEM_1StepLock( HSEM, CFG_HW_RCC_SEMID))
+    ;
+
+  if (LL_RCC_GetSysClkSource() == LL_RCC_SYS_CLKSOURCE_STATUS_HSI) {
+    LL_RCC_HSE_Enable();
+    while (!LL_RCC_HSE_IsReady())
+      ;
+    LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSE);
+    while (LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSE)
+      ;
+  } else {
+    /**
+     * As long as the current application is fine with HSE as system clock source,
+     * there is nothing to do here
+     */
+  }
+
+  /* Release RCC semaphore */
+  LL_HSEM_ReleaseLock( HSEM, CFG_HW_RCC_SEMID, 0);
+
+  HAL_ResumeTick();
 
 /* USER CODE END PWR_ExitStopMode */
 }
@@ -122,6 +231,22 @@ void PWR_EnterSleepMode( void )
 {
 /* USER CODE BEGIN PWR_EnterSleepMode */
 
+  HAL_SuspendTick();
+
+  /************************************************************************************
+   * ENTER SLEEP MODE
+   ***********************************************************************************/
+  LL_LPM_EnableSleep(); /**< Clear SLEEPDEEP bit of Cortex System Control Register */
+
+  /**
+   * This option is used to ensure that store operations are completed
+   */
+#if defined ( __CC_ARM)
+  __force_stores();
+#endif
+
+  __WFI();
+
 /* USER CODE END PWR_EnterSleepMode */
 }
 
@@ -134,7 +259,7 @@ void PWR_EnterSleepMode( void )
 void PWR_ExitSleepMode( void )
 {
 /* USER CODE BEGIN PWR_ExitSleepMode */
-
+  HAL_ResumeTick();
 /* USER CODE END PWR_ExitSleepMode */
 }
 

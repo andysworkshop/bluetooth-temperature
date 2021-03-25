@@ -1,22 +1,22 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : App/app_ble.c
-  * Description        : Application file for BLE Middleware.
-  *
-  *****************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * File Name          : App/app_ble.c
+ * Description        : Application file for BLE Middleware.
+ *
+ *****************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -171,7 +171,7 @@ typedef struct
 #define BD_ADDR_SIZE_LOCAL    6
 
 /* USER CODE BEGIN PD */
-
+#define LED_ON_TIMEOUT                 (0.005*1000*1000/CFG_TS_TICK_VAL) /**< 5ms */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -619,6 +619,13 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           P2PS_APP_Notification(&handleNotification);
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
 
+      /*
+       * SPECIFIC to P2P Server APP
+       */
+      handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
+      handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
+      P2PS_APP_Notification(&handleNotification);
+
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
         break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -645,6 +652,59 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       {
       /* USER CODE BEGIN ecode */
 
+    aci_gap_pairing_complete_event_rp0 *pairing_complete;
+
+  case ACI_GAP_LIMITED_DISCOVERABLE_VSEVT_CODE:
+    APP_DBG_MSG("\r\n\r** ACI_GAP_LIMITED_DISCOVERABLE_VSEVT_CODE \n");
+    break; /* ACI_GAP_LIMITED_DISCOVERABLE_VSEVT_CODE */
+  case ACI_GAP_PASS_KEY_REQ_VSEVT_CODE:
+    APP_DBG_MSG("\r\n\r** ACI_GAP_PASS_KEY_REQ_VSEVT_CODE \n");
+    /*
+     aci_gap_pass_key_resp(BleApplicationContext.BleApplicationContext_legacy.connectionHandle,123456);
+     */
+    APP_DBG_MSG("\r\n\r** aci_gap_pass_key_resp \n");
+    break; /* ACI_GAP_PASS_KEY_REQ_VSEVT_CODE */
+  case ACI_GAP_AUTHORIZATION_REQ_VSEVT_CODE:
+    APP_DBG_MSG("\r\n\r** ACI_GAP_AUTHORIZATION_REQ_VSEVT_CODE \n");
+    break; /* ACI_GAP_AUTHORIZATION_REQ_VSEVT_CODE */
+  case ACI_GAP_SLAVE_SECURITY_INITIATED_VSEVT_CODE:
+    APP_DBG_MSG("\r\n\r** ACI_GAP_SLAVE_SECURITY_INITIATED_VSEVT_CODE \n");
+    break; /* ACI_GAP_SLAVE_SECURITY_INITIATED_VSEVT_CODE */
+  case ACI_GAP_BOND_LOST_VSEVT_CODE:
+    APP_DBG_MSG("\r\n\r** ACI_GAP_BOND_LOST_VSEVT_CODE \n");
+    aci_gap_allow_rebond(BleApplicationContext.BleApplicationContext_legacy.connectionHandle);
+    APP_DBG_MSG("\r\n\r** Send allow rebond \n");
+    break; /* ACI_GAP_BOND_LOST_VSEVT_CODE */
+
+  case ACI_GAP_ADDR_NOT_RESOLVED_VSEVT_CODE:
+    APP_DBG_MSG("\r\n\r** ACI_GAP_ADDR_NOT_RESOLVED_VSEVT_CODE \n");
+    break; /* ACI_GAP_ADDR_NOT_RESOLVED_VSEVT_CODE */
+  case (ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE):
+    APP_DBG_MSG("\r\n\r** ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE\n");
+    break; /* ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE */
+  case (ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE):
+    APP_DBG_MSG("numeric_value = %ld\n",
+        ((aci_gap_numeric_comparison_value_event_rp0 *)(blecore_evt->data))->Numeric_Value);
+
+    APP_DBG_MSG("Hex_value = %lx\n",
+        ((aci_gap_numeric_comparison_value_event_rp0 *)(blecore_evt->data))->Numeric_Value);
+
+    aci_gap_numeric_comparison_value_confirm_yesno(BleApplicationContext.BleApplicationContext_legacy.connectionHandle,
+        1); /* CONFIRM_YES = 1 */
+
+    APP_DBG_MSG("\r\n\r** aci_gap_numeric_comparison_value_confirm_yesno-->YES \n");
+    break;
+  case (ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE): {
+    pairing_complete = (aci_gap_pairing_complete_event_rp0*) blecore_evt->data;
+    APP_DBG_MSG("BLE_CTRL_App_Notification: ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE, pairing_complete->Status = %d\n",pairing_complete->Status);
+    if (pairing_complete->Status == 0) {
+      APP_DBG_MSG("\r\n\r** Pairing OK \n");
+    } else {
+      APP_DBG_MSG("\r\n\r** Pairing KO \n");
+    }
+  }
+    break;
+
       /* USER CODE END ecode */
       /**
        * SPECIFIC to P2P Server APP
@@ -666,7 +726,8 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 #if(RADIO_ACTIVITY_EVENT != 0)
         case ACI_HAL_END_OF_RADIO_ACTIVITY_VSEVT_CODE:
         /* USER CODE BEGIN RADIO_ACTIVITY_EVENT*/
-
+    HAL_GPIO_WritePin(LINK_LED_GPIO_Port, LINK_LED_Pin, GPIO_PIN_SET);
+    HW_TS_Start(BleApplicationContext.SwitchOffGPIO_timer_Id, (uint32_t) LED_ON_TIMEOUT);
         /* USER CODE END RADIO_ACTIVITY_EVENT*/
           break; /* ACI_HAL_END_OF_RADIO_ACTIVITY_VSEVT_CODE */
 #endif
@@ -1039,7 +1100,7 @@ static void Adv_Cancel_Req( void )
 
 static void Switch_OFF_GPIO(){
 /* USER CODE BEGIN Switch_OFF_GPIO */
-
+  HAL_GPIO_WritePin(LINK_LED_GPIO_Port, LINK_LED_Pin, GPIO_PIN_RESET);
 /* USER CODE END Switch_OFF_GPIO */
 }
 
