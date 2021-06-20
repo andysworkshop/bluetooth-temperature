@@ -153,7 +153,7 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
      */
     HAL_PWR_EnableBkUpAccess();
 
-    __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_HSE_DIV32); /**< Select HSE/32 as RTC Input */
+    __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSI); /**< Select LSI as RTC Input */
 
   /* USER CODE END RTC_MspInit 0 */
     /* Peripheral clock enable */
