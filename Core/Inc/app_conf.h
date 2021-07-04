@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : app_conf.h
-  * Description        : Application configuration file for STM32WPAN Middleware.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * File Name          : app_conf.h
+ * Description        : Application configuration file for STM32WPAN Middleware.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -459,6 +459,8 @@ typedef enum
   CFG_TIM_PROC_ID_ISR,
   /* USER CODE BEGIN CFG_TimProcID_t */
 
+  CFG_TIM_ONE_SECOND
+
   /* USER CODE END CFG_TimProcID_t */
 } CFG_TimProcID_t;
 
@@ -544,6 +546,11 @@ typedef enum
 #define MAX_DBG_TRACE_MSG_SIZE 1024
 
 /* USER CODE BEGIN Defines */
+
+// ST's definition above is wrong when using LSI instead of LSE and you can't change
+// it directly because it will be overwritten by MX when you generate code :(
+#undef CFG_TS_TICK_VAL
+#define CFG_TS_TICK_VAL DIVR( (CFG_RTCCLK_DIV * 1000000), LSI_VALUE )
 
 /* USER CODE END Defines */
 

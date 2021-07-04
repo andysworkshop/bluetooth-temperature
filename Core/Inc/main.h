@@ -61,8 +61,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LOBAT_Pin GPIO_PIN_4
-#define LOBAT_GPIO_Port GPIOA
+#define T1_Pin GPIO_PIN_4
+#define T1_GPIO_Port GPIOA
+#define T2_Pin GPIO_PIN_5
+#define T2_GPIO_Port GPIOA
+#define T3_Pin GPIO_PIN_6
+#define T3_GPIO_Port GPIOA
+#define T4_Pin GPIO_PIN_7
+#define T4_GPIO_Port GPIOA
 #define LINK_LED_Pin GPIO_PIN_10
 #define LINK_LED_GPIO_Port GPIOA
 #define POWER_LED_Pin GPIO_PIN_11
