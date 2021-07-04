@@ -38,8 +38,8 @@
 
 typedef struct {
   uint8_t connected;
+  uint8_t notificationEnabled;
   volatile uint16_t dmaBuffer[4];
-  uint8_t oneSecondTimerId;
   float readings[4];
 } AppContext;
 
@@ -71,93 +71,92 @@ static AppContext appContext;
 static void StartTimedAdcConversion();
 static void StopTimedAdcConversion();
 static float GetTemperature(uint32_t adcReading, uint32_t resistorValue);
+static void SendTemperatureNotification();
 
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
-void P2PS_STM_App_Notification(P2PS_STM_App_Notification_evt_t *pNotification)
-{
-/* USER CODE BEGIN P2PS_STM_App_Notification_1 */
+void P2PS_STM_App_Notification(P2PS_STM_App_Notification_evt_t *pNotification) {
+  /* USER CODE BEGIN P2PS_STM_App_Notification_1 */
 
-/* USER CODE END P2PS_STM_App_Notification_1 */
-  switch(pNotification->P2P_Evt_Opcode)
-  {
-/* USER CODE BEGIN P2PS_STM_App_Notification_P2P_Evt_Opcode */
+  /* USER CODE END P2PS_STM_App_Notification_1 */
+  switch (pNotification->P2P_Evt_Opcode) {
+  /* USER CODE BEGIN P2PS_STM_App_Notification_P2P_Evt_Opcode */
 
-/* USER CODE END P2PS_STM_App_Notification_P2P_Evt_Opcode */
+  /* USER CODE END P2PS_STM_App_Notification_P2P_Evt_Opcode */
 
-    case P2PS_STM__NOTIFY_ENABLED_EVT:
-/* USER CODE BEGIN P2PS_STM__NOTIFY_ENABLED_EVT */
+  case P2PS_STM__NOTIFY_ENABLED_EVT:
+    /* USER CODE BEGIN P2PS_STM__NOTIFY_ENABLED_EVT */
+    appContext.notificationEnabled = TRUE;
+    /* USER CODE END P2PS_STM__NOTIFY_ENABLED_EVT */
+    break;
 
-/* USER CODE END P2PS_STM__NOTIFY_ENABLED_EVT */
-      break;
+  case P2PS_STM_NOTIFY_DISABLED_EVT:
+    /* USER CODE BEGIN P2PS_STM_NOTIFY_DISABLED_EVT */
+    appContext.notificationEnabled = FALSE;
+    /* USER CODE END P2PS_STM_NOTIFY_DISABLED_EVT */
+    break;
 
-    case P2PS_STM_NOTIFY_DISABLED_EVT:
-/* USER CODE BEGIN P2PS_STM_NOTIFY_DISABLED_EVT */
+  case P2PS_STM_WRITE_EVT:
+    /* USER CODE BEGIN P2PS_STM_WRITE_EVT */
 
-/* USER CODE END P2PS_STM_NOTIFY_DISABLED_EVT */
-      break;
+    /* USER CODE END P2PS_STM_WRITE_EVT */
+    break;
 
-    case P2PS_STM_WRITE_EVT:
-/* USER CODE BEGIN P2PS_STM_WRITE_EVT */
+  default:
+    /* USER CODE BEGIN P2PS_STM_App_Notification_default */
 
-/* USER CODE END P2PS_STM_WRITE_EVT */
-      break;
-
-    default:
-/* USER CODE BEGIN P2PS_STM_App_Notification_default */
-
-/* USER CODE END P2PS_STM_App_Notification_default */
-      break;
+    /* USER CODE END P2PS_STM_App_Notification_default */
+    break;
   }
-/* USER CODE BEGIN P2PS_STM_App_Notification_2 */
+  /* USER CODE BEGIN P2PS_STM_App_Notification_2 */
 
-/* USER CODE END P2PS_STM_App_Notification_2 */
+  /* USER CODE END P2PS_STM_App_Notification_2 */
   return;
 }
 
-void P2PS_APP_Notification(P2PS_APP_ConnHandle_Not_evt_t *pNotification)
-{
-/* USER CODE BEGIN P2PS_APP_Notification_1 */
+void P2PS_APP_Notification(P2PS_APP_ConnHandle_Not_evt_t *pNotification) {
+  /* USER CODE BEGIN P2PS_APP_Notification_1 */
 
-/* USER CODE END P2PS_APP_Notification_1 */
-  switch(pNotification->P2P_Evt_Opcode)
-  {
-/* USER CODE BEGIN P2PS_APP_Notification_P2P_Evt_Opcode */
+  /* USER CODE END P2PS_APP_Notification_1 */
+  switch (pNotification->P2P_Evt_Opcode) {
+  /* USER CODE BEGIN P2PS_APP_Notification_P2P_Evt_Opcode */
 
-/* USER CODE END P2PS_APP_Notification_P2P_Evt_Opcode */
-  case PEER_CONN_HANDLE_EVT :
-/* USER CODE BEGIN PEER_CONN_HANDLE_EVT */
+  /* USER CODE END P2PS_APP_Notification_P2P_Evt_Opcode */
+  case PEER_CONN_HANDLE_EVT:
+    /* USER CODE BEGIN PEER_CONN_HANDLE_EVT */
     StartTimedAdcConversion();
-/* USER CODE END PEER_CONN_HANDLE_EVT */
+    /* USER CODE END PEER_CONN_HANDLE_EVT */
     break;
 
-    case PEER_DISCON_HANDLE_EVT :
-/* USER CODE BEGIN PEER_DISCON_HANDLE_EVT */
+  case PEER_DISCON_HANDLE_EVT:
+    /* USER CODE BEGIN PEER_DISCON_HANDLE_EVT */
     StopTimedAdcConversion();
-/* USER CODE END PEER_DISCON_HANDLE_EVT */
+    /* USER CODE END PEER_DISCON_HANDLE_EVT */
     break;
 
-    default:
-/* USER CODE BEGIN P2PS_APP_Notification_default */
+  default:
+    /* USER CODE BEGIN P2PS_APP_Notification_default */
 
-/* USER CODE END P2PS_APP_Notification_default */
-      break;
+    /* USER CODE END P2PS_APP_Notification_default */
+    break;
   }
-/* USER CODE BEGIN P2PS_APP_Notification_2 */
+  /* USER CODE BEGIN P2PS_APP_Notification_2 */
 
-/* USER CODE END P2PS_APP_Notification_2 */
+  /* USER CODE END P2PS_APP_Notification_2 */
   return;
 }
 
-void P2PS_APP_Init(void)
-{
-/* USER CODE BEGIN P2PS_APP_Init */
+void P2PS_APP_Init(void) {
+  /* USER CODE BEGIN P2PS_APP_Init */
 
   // initialise the application context
   memset(&appContext, 0, sizeof(appContext));
 
-/* USER CODE END P2PS_APP_Init */
+  // create a task for sending the notification
+  UTIL_SEQ_RegTask(1 << CFG_TASK_SEND_TEMPERATURE_NOTIFICATION, UTIL_SEQ_RFU, SendTemperatureNotification);
+
+  /* USER CODE END P2PS_APP_Init */
   return;
 }
 
@@ -222,6 +221,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
   appContext.readings[1] = GetTemperature(appContext.dmaBuffer[1], 10005);
   appContext.readings[2] = GetTemperature(appContext.dmaBuffer[2], 9977);
   appContext.readings[3] = GetTemperature(appContext.dmaBuffer[3], 10010);
+
+  // schedule a task to send the notification immediately
+
+  UTIL_SEQ_SetTask(1 << CFG_TASK_SEND_TEMPERATURE_NOTIFICATION, CFG_SCH_PRIO_0);
 }
 
 static float GetTemperature(uint32_t adcReading, uint32_t resistorValue) {
@@ -238,6 +241,21 @@ static float GetTemperature(uint32_t adcReading, uint32_t resistorValue) {
 
   float t = (1 / (0.003354016 + (0.000295858 * log(rt / 10000)))) - 273.15;
   return t;
+}
+
+/*
+ * Send a temperature notification
+ */
+
+static void SendTemperatureNotification() {
+
+  // can't do anything unless connected and notification is enabled
+
+  if (!appContext.connected || !appContext.notificationEnabled) {
+    return;
+  }
+
+  P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, pPayload);
 }
 
 /* USER CODE END FD_LOCAL_FUNCTIONS*/
