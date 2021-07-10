@@ -173,17 +173,18 @@ void EddystoneURL_Process(void)
       .CalibratedTxPower = CALIBRATED_TX_POWER_AT_0_M,
       .UrlScheme = UrlScheme,
       .Url = Url,
-      .UrlLength = strlen(PHYSICAL_WEB_URL)
+      .UrlLength = sizeof(Url) - 1
     };
 
     EddystoneURL_Init(&EddystoneURL_InitStruct);
   }
 #else
+  uint8_t UrlScheme = URL_PREFIX;
   EddystoneURL_InitTypeDef EddystoneURL_InitStruct =
       {
           .AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS,
           .CalibratedTxPower = CALIBRATED_TX_POWER_AT_0_M,
-          .UrlScheme = URL_PREFIX,
+          .UrlScheme = UrlScheme,
           .Url = (uint8_t*) PHYSICAL_WEB_URL,
           .UrlLength = strlen(PHYSICAL_WEB_URL)
       };

@@ -105,13 +105,13 @@
 #define CFG_GAP_DEVICE_NAME_LENGTH      (8)
 
 /**
-*   Identity root key used to derive LTK and CSRK
-*/
+ *   Identity root key used to derive LTK and CSRK
+ */
 #define CFG_BLE_IRK     {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0}
 
 /**
-* Encryption root key used to derive LTK and CSRK
-*/
+ * Encryption root key used to derive LTK and CSRK
+ */
 #define CFG_BLE_ERK     {0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21, 0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21}
 
 /**
@@ -424,8 +424,9 @@ typedef enum
 {
   CFG_TIM_PROC_ID_ISR,
   /* USER CODE BEGIN CFG_TimProcID_t */
+  CFG_TIM_PROC_ADC
 
-  /* USER CODE END CFG_TimProcID_t */
+/* USER CODE END CFG_TimProcID_t */
 } CFG_TimProcID_t;
 
 /******************************************************************************
@@ -533,23 +534,23 @@ typedef enum
 /**< Add in that list all tasks that may send a ACI/HCI command */
 typedef enum
 {
-    CFG_TASK_BEACON_UPDATE_REQ_ID,
-    CFG_TASK_HCI_ASYNCH_EVT_ID,
-/* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
+  CFG_TASK_BEACON_UPDATE_REQ_ID,
+  CFG_TASK_HCI_ASYNCH_EVT_ID,
+  /* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
 
-/* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
-    CFG_LAST_TASK_ID_WITH_HCICMD,                                               /**< Shall be LAST in the list */
+  /* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
+  CFG_LAST_TASK_ID_WITH_HCICMD, /**< Shall be LAST in the list */
 } CFG_Task_Id_With_HCI_Cmd_t;
 
 /**< Add in that list all tasks that never send a ACI/HCI command */
 typedef enum
 {
-    CFG_FIRST_TASK_ID_WITH_NO_HCICMD = CFG_LAST_TASK_ID_WITH_HCICMD - 1,        /**< Shall be FIRST in the list */
-    CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID,
-/* USER CODE BEGIN CFG_Task_Id_With_NO_HCI_Cmd_t */
+  CFG_FIRST_TASK_ID_WITH_NO_HCICMD = CFG_LAST_TASK_ID_WITH_HCICMD - 1, /**< Shall be FIRST in the list */
+  CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID,
+  /* USER CODE BEGIN CFG_Task_Id_With_NO_HCI_Cmd_t */
 
-/* USER CODE END CFG_Task_Id_With_NO_HCI_Cmd_t */
-    CFG_LAST_TASK_ID_WITHO_NO_HCICMD                                            /**< Shall be LAST in the list */
+  /* USER CODE END CFG_Task_Id_With_NO_HCI_Cmd_t */
+  CFG_LAST_TASK_ID_WITHO_NO_HCICMD /**< Shall be LAST in the list */
 } CFG_Task_Id_With_NO_HCI_Cmd_t;
 #define CFG_TASK_NBR    CFG_LAST_TASK_ID_WITHO_NO_HCICMD
 
@@ -559,8 +560,8 @@ typedef enum
  */
 typedef enum
 {
-    CFG_SCH_PRIO_0,
-    CFG_PRIO_NBR,
+  CFG_SCH_PRIO_0,
+  CFG_PRIO_NBR,
 } CFG_SCH_Prio_Id_t;
 
 /**
@@ -568,8 +569,8 @@ typedef enum
  */
 typedef enum
 {
-    CFG_IDLEEVT_HCI_CMD_EVT_RSP_ID,
-    CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID,
+  CFG_IDLEEVT_HCI_CMD_EVT_RSP_ID,
+  CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID,
 } CFG_IdleEvt_Id_t;
 
 /******************************************************************************
@@ -581,11 +582,11 @@ typedef enum
  */
 typedef enum
 {
-    CFG_LPM_APP,
-    CFG_LPM_APP_BLE,
-  /* USER CODE BEGIN CFG_LPM_Id_t */
+  CFG_LPM_APP,
+  CFG_LPM_APP_BLE,
+/* USER CODE BEGIN CFG_LPM_Id_t */
 
-  /* USER CODE END CFG_LPM_Id_t */
+/* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
 /******************************************************************************

@@ -46,13 +46,15 @@ extern "C"
 #endif
 
 /* Exported types ------------------------------------------------------------*/
-enum {
-  NOT_CONNECTED, CONNECTED
+enum
+{
+  NOT_CONNECTED,
+  CONNECTED
 };
 
+/* Exported constants --------------------------------------------------------*/
 extern const char *PHYSICAL_WEB_URL;
 
-/* Exported constants --------------------------------------------------------*/
 #define ADVERTISING_INTERVAL_IN_MS  (1000)
 #define CALIBRATED_TX_POWER_AT_0_M  ((uint8_t) (-22))
 #define NAMESPACE_ID                'w', 'w', 'w', '.', 's', 't', '.', 'c', 'o', 'm'

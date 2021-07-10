@@ -150,7 +150,10 @@ static void EddystoneTLM(void)
   uint32_t data_address = OTA_BEACON_DATA_ADDRESS + OFFSET_PAYLOAD_LENGTH; /* 0x8006009 */
 #endif
 
+  EddystoneTLM_InitStruct.AdvertisingCount++;
+
   if (tlm_adv == TRUE)
+
   { /* Advertising of TLM */
     ret = aci_gap_set_non_discoverable();
 
@@ -325,9 +328,9 @@ void EddystoneTLM_Process(void)
   EddystoneTLM_InitStruct.AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS;
   EddystoneTLM_InitStruct.TLM_Version = 0;
   EddystoneTLM_InitStruct.BatteryVoltage = 3000;
-  EddystoneTLM_InitStruct.BeaconTemperature = 10000;
+  EddystoneTLM_InitStruct.BeaconTemperature = 0;
   EddystoneTLM_InitStruct.Uptime = 2000000;
-  EddystoneTLM_InitStruct.AdvertisingCount = 3000000;
+  EddystoneTLM_InitStruct.AdvertisingCount = 0;
 
   EddystoneUID_InitStruct.AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS;
   EddystoneUID_InitStruct.CalibratedTxPower = CALIBRATED_TX_POWER_AT_0_M;
@@ -407,9 +410,9 @@ void EddystoneTLM_Process(void)
     EddystoneTLM_InitStruct.AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS;
     EddystoneTLM_InitStruct.TLM_Version = 0;
     EddystoneTLM_InitStruct.BatteryVoltage = 3000;
-    EddystoneTLM_InitStruct.BeaconTemperature = 10000;
+    EddystoneTLM_InitStruct.BeaconTemperature = 0;
     EddystoneTLM_InitStruct.Uptime = 2000000;
-    EddystoneTLM_InitStruct.AdvertisingCount = 3000000;
+    EddystoneTLM_InitStruct.AdvertisingCount = 0;
 
     EddystoneUID_InitStruct.AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS;
     EddystoneUID_InitStruct.CalibratedTxPower = CALIBRATED_TX_POWER_AT_0_M;
@@ -419,9 +422,13 @@ void EddystoneTLM_Process(void)
     EddystoneURL_Init(&EddystoneURL_InitStruct);
     tlm_adv = TRUE;
 
-    /* 10s of URL advertise */
-    HW_TS_Start(TimerTLM_Id, DEFAULT_BEACON_SEC * 10);
+    /* 1s of URL advertise */
+    HW_TS_Start(TimerTLM_Id, DEFAULT_BEACON_SEC);
   }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+void SetBeaconTemperature(uint16_t temperature) {
+  EddystoneTLM_InitStruct.BeaconTemperature = temperature;
+}
