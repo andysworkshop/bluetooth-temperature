@@ -302,8 +302,8 @@ static void EddystoneTLM(void)
     /* No OTA */
     EddystoneURL_Init(&EddystoneURL_InitStruct);
     tlm_adv = TRUE;
-    /* 10s of URL advertise */
-    HW_TS_Start(TimerTLM_Id, DEFAULT_BEACON_SEC * 10);
+    /* 5s of URL advertise */
+    HW_TS_Start(TimerTLM_Id, DEFAULT_BEACON_SEC * 5);
 #endif
   }
 }

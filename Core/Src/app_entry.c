@@ -56,7 +56,8 @@ extern RTC_HandleTypeDef hrtc;
 /* Private variables ---------------------------------------------------------*/
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t EvtPool[POOL_SIZE];
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t SystemCmdBuffer;
-PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255U];
+PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE
+    + 255U];
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255];
 
 /* USER CODE BEGIN PV */
@@ -64,23 +65,23 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_
 /* USER CODE END PV */
 
 /* Private functions prototypes-----------------------------------------------*/
-static void SystemPower_Config( void );
-static void appe_Tl_Init( void );
-static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status );
-static void APPE_SysUserEvtRx( void * pPayload );
+static void SystemPower_Config(void);
+static void appe_Tl_Init(void);
+static void APPE_SysStatusNot(SHCI_TL_CmdStatus_t status);
+static void APPE_SysUserEvtRx(void *pPayload);
 
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
-void APPE_Init( void )
+void APPE_Init(void)
 {
   SystemPower_Config(); /**< Configure the system Power Mode */
 
   HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
-/* USER CODE BEGIN APPE_Init_1 */
+  /* USER CODE BEGIN APPE_Init_1 */
 
   /**
    * The Standby mode should not be entered before the initialization is over
@@ -88,18 +89,20 @@ void APPE_Init( void )
    */
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
 
-/* USER CODE END APPE_Init_1 */
-  appe_Tl_Init();	/* Initialize all transport layers */
+  // off and stop disabled: will use sleep mode
+  UTIL_LPM_SetStopMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_DISABLE);
+  /* USER CODE END APPE_Init_1 */
+  appe_Tl_Init(); /* Initialize all transport layers */
 
   /**
    * From now, the application is waiting for the ready event ( VS_HCI_C2_Ready )
    * received on the system channel before starting the Stack
    * This system event is received with APPE_SysUserEvtRx()
    */
-/* USER CODE BEGIN APPE_Init_2 */
+  /* USER CODE BEGIN APPE_Init_2 */
 
-/* USER CODE END APPE_Init_2 */
-   return;
+  /* USER CODE END APPE_Init_2 */
+  return;
 }
 /* USER CODE BEGIN FD */
 
@@ -141,7 +144,7 @@ static void SystemPower_Config(void)
   return;
 }
 
-static void appe_Tl_Init( void )
+static void appe_Tl_Init(void)
 {
   TL_MM_Config_t tl_mm_config;
   SHCI_TL_HciInitConf_t SHci_Tl_Init_Conf;
@@ -149,8 +152,8 @@ static void appe_Tl_Init( void )
   TL_Init();
 
   /**< System channel initialization */
-  UTIL_SEQ_RegTask( 1<< CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID, UTIL_SEQ_RFU, shci_user_evt_proc );
-  SHci_Tl_Init_Conf.p_cmdbuffer = (uint8_t*)&SystemCmdBuffer;
+  UTIL_SEQ_RegTask(1 << CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID, UTIL_SEQ_RFU, shci_user_evt_proc);
+  SHci_Tl_Init_Conf.p_cmdbuffer = (uint8_t*) &SystemCmdBuffer;
   SHci_Tl_Init_Conf.StatusNotCallBack = APPE_SysStatusNot;
   shci_init(APPE_SysUserEvtRx, (void*) &SHci_Tl_Init_Conf);
 
@@ -159,14 +162,14 @@ static void appe_Tl_Init( void )
   tl_mm_config.p_SystemSpareEvtBuffer = SystemSpareEvtBuffer;
   tl_mm_config.p_AsynchEvtPool = EvtPool;
   tl_mm_config.AsynchEvtPoolSize = POOL_SIZE;
-  TL_MM_Init( &tl_mm_config );
+  TL_MM_Init(&tl_mm_config);
 
   TL_Enable();
 
   return;
 }
 
-static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status )
+static void APPE_SysStatusNot(SHCI_TL_CmdStatus_t status)
 {
   UNUSED(status);
   return;
@@ -181,13 +184,13 @@ static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status )
  * ( eg ((tSHCI_UserEvtRxParam*)pPayload)->status shall be set to SHCI_TL_UserEventFlow_Disable )
  * When the status is not filled, the buffer is released by default
  */
-static void APPE_SysUserEvtRx( void * pPayload )
+static void APPE_SysUserEvtRx(void *pPayload)
 {
   UNUSED(pPayload);
   /* Traces channel initialization */
-  APPD_EnableCPU2( );
+  APPD_EnableCPU2();
 
-  APP_BLE_Init( );
+  APP_BLE_Init();
   UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
   return;
 }
@@ -202,41 +205,41 @@ static void APPE_SysUserEvtRx( void * pPayload )
  *
  *************************************************************/
 
-void UTIL_SEQ_Idle( void )
+void UTIL_SEQ_Idle(void)
 {
 #if ( CFG_LPM_SUPPORTED == 1)
-  UTIL_LPM_EnterLowPower( );
+  UTIL_LPM_EnterLowPower();
 #endif
   return;
 }
 
 /**
-  * @brief  This function is called by the scheduler each time an event
-  *         is pending.
-  *
-  * @param  evt_waited_bm : Event pending.
-  * @retval None
-  */
-void UTIL_SEQ_EvtIdle( UTIL_SEQ_bm_t task_id_bm, UTIL_SEQ_bm_t evt_waited_bm )
+ * @brief  This function is called by the scheduler each time an event
+ *         is pending.
+ *
+ * @param  evt_waited_bm : Event pending.
+ * @retval None
+ */
+void UTIL_SEQ_EvtIdle(UTIL_SEQ_bm_t task_id_bm, UTIL_SEQ_bm_t evt_waited_bm)
 {
-  UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
+  UTIL_SEQ_Run( UTIL_SEQ_DEFAULT);
 }
 
-void shci_notify_asynch_evt(void* pdata)
+void shci_notify_asynch_evt(void *pdata)
 {
-  UTIL_SEQ_SetTask( 1<<CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID, CFG_SCH_PRIO_0);
+  UTIL_SEQ_SetTask(1 << CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID, CFG_SCH_PRIO_0);
   return;
 }
 
 void shci_cmd_resp_release(uint32_t flag)
 {
-  UTIL_SEQ_SetEvt( 1<< CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID );
+  UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID);
   return;
 }
 
 void shci_cmd_resp_wait(uint32_t timeout)
 {
-  UTIL_SEQ_WaitEvt( 1<< CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID );
+  UTIL_SEQ_WaitEvt(1 << CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID);
   return;
 }
 

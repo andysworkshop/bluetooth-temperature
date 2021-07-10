@@ -6,11 +6,11 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
  *
  * This software component is licensed by ST under BSD 3-Clause license,
- * the "License"; You may not use this file except in compliance with the 
+ * the "License"; You may not use this file except in compliance with the
  * License. You may obtain a copy of the License at:
  *                        opensource.org/licenses/BSD-3-Clause
  *
@@ -22,14 +22,14 @@
 #include "utilities_conf.h"
 
 /** @addtogroup TINY_LPM
-  * @{
-  */
+ * @{
+ */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup TINY_LPM_Private_macros TINY LPM private macros
-  * @{
-  */
+ * @{
+ */
 
 /**
  * @brief macro used to initialized the critical section
@@ -53,25 +53,25 @@
 #endif
 
 /**
- * @brief macro used to enter the critical section when Entering Low Power 
+ * @brief macro used to enter the critical section when Entering Low Power
  * @note  this macro is only called inside the function UTIL_LPM_EnterLowPower
- *        and in a basic configuration shall be identcal to the macro 
+ *        and in a basic configuration shall be identcal to the macro
  *        UTIL_LPM_EXIT_CRITICAL_SECTION. In general, the request to enter the
- *        low power mode is already done under a critical section and 
- *        nesting it is useless (in specific implementations not even possible). 
+ *        low power mode is already done under a critical section and
+ *        nesting it is useless (in specific implementations not even possible).
  *        So the users could define their own macro)
  */
 #ifndef UTIL_LPM_ENTER_CRITICAL_SECTION_ELP
-  #define UTIL_LPM_ENTER_CRITICAL_SECTION_ELP( )    UTIL_LPM_ENTER_CRITICAL_SECTION( )
+#define UTIL_LPM_ENTER_CRITICAL_SECTION_ELP( )    UTIL_LPM_ENTER_CRITICAL_SECTION( )
 #endif
 
 /**
  * @brief macro used to exit the critical section when exting Low Power
- * @note  the behavior of the macro shall be symmetrical with the macro 
+ * @note  the behavior of the macro shall be symmetrical with the macro
  *        UTIL_LPM_ENTER_CRITICAL_SECTION_ELP
  */
 #ifndef UTIL_LPM_EXIT_CRITICAL_SECTION_ELP
-  #define UTIL_LPM_EXIT_CRITICAL_SECTION_ELP( )     UTIL_LPM_EXIT_CRITICAL_SECTION( )
+#define UTIL_LPM_EXIT_CRITICAL_SECTION_ELP( )     UTIL_LPM_EXIT_CRITICAL_SECTION( )
 #endif
 
 /**
@@ -82,8 +82,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
 /** @defgroup TINY_LPM_Private_define TINY LPM private defines
-  * @{
-  */
+ * @{
+ */
 
 /**
  * @brief value used to reset the LPM mode
@@ -96,8 +96,8 @@
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /** @defgroup TINY_LPM_Private_variables TINY LPM private variables
-  * @{
-  */
+ * @{
+ */
 
 /**
  * @brief value used to represent the LPM state of stop mode
@@ -117,76 +117,76 @@ static UTIL_LPM_bm_t OffModeDisable = UTIL_LPM_NO_BIT_SET;
 /* Functions Definition ------------------------------------------------------*/
 
 /** @addtogroup TINY_LPM_Exported_function
-  * @{
-  */
-void UTIL_LPM_Init( void )
+ * @{
+ */
+void UTIL_LPM_Init(void)
 {
   StopModeDisable = UTIL_LPM_NO_BIT_SET;
   OffModeDisable = UTIL_LPM_NO_BIT_SET;
   UTIL_LPM_INIT_CRITICAL_SECTION( );
 }
 
-void UTIL_LPM_DeInit( void )
+void UTIL_LPM_DeInit(void)
 {
 }
 
-void UTIL_LPM_SetStopMode( UTIL_LPM_bm_t lpm_id_bm, UTIL_LPM_State_t state )
+void UTIL_LPM_SetStopMode(UTIL_LPM_bm_t lpm_id_bm, UTIL_LPM_State_t state)
 {
-  UTIL_LPM_ENTER_CRITICAL_SECTION( );
-  
-  switch( state )
+  UTIL_LPM_ENTER_CRITICAL_SECTION();
+
+  switch (state)
   {
   case UTIL_LPM_DISABLE:
     {
-      StopModeDisable |= lpm_id_bm;
-      break;
-    }
+    StopModeDisable |= lpm_id_bm;
+    break;
+  }
   case UTIL_LPM_ENABLE:
     {
-      StopModeDisable &= ( ~lpm_id_bm );
-      break;
-    }
-  default :
-    {
-      break;
-    }
+    StopModeDisable &= (~lpm_id_bm);
+    break;
   }
-  
-  UTIL_LPM_EXIT_CRITICAL_SECTION( );
+  default:
+    {
+    break;
+  }
+  }
+
+  UTIL_LPM_EXIT_CRITICAL_SECTION();
 }
 
-void UTIL_LPM_SetOffMode( UTIL_LPM_bm_t lpm_id_bm, UTIL_LPM_State_t state )
+void UTIL_LPM_SetOffMode(UTIL_LPM_bm_t lpm_id_bm, UTIL_LPM_State_t state)
 {
-  UTIL_LPM_ENTER_CRITICAL_SECTION( );
-  
-  switch(state)
+  UTIL_LPM_ENTER_CRITICAL_SECTION();
+
+  switch (state)
   {
   case UTIL_LPM_DISABLE:
     {
-      OffModeDisable |= lpm_id_bm;
-      break;
-    }
+    OffModeDisable |= lpm_id_bm;
+    break;
+  }
   case UTIL_LPM_ENABLE:
     {
-      OffModeDisable &= ( ~lpm_id_bm );
-      break;
-    }
-  default :
-    {
-      break;
-    }
+    OffModeDisable &= (~lpm_id_bm);
+    break;
   }
-  
-  UTIL_LPM_EXIT_CRITICAL_SECTION( );
+  default:
+    {
+    break;
+  }
+  }
+
+  UTIL_LPM_EXIT_CRITICAL_SECTION();
 }
 
-UTIL_LPM_Mode_t UTIL_LPM_GetMode( void )
+UTIL_LPM_Mode_t UTIL_LPM_GetMode(void)
 {
   UTIL_LPM_Mode_t mode_selected;
 
-  UTIL_LPM_ENTER_CRITICAL_SECTION( );
+  UTIL_LPM_ENTER_CRITICAL_SECTION();
 
-  if( StopModeDisable != UTIL_LPM_NO_BIT_SET )
+  if (StopModeDisable != UTIL_LPM_NO_BIT_SET)
   {
     /**
      * At least one user disallows Stop Mode
@@ -195,7 +195,7 @@ UTIL_LPM_Mode_t UTIL_LPM_GetMode( void )
   }
   else
   {
-    if( OffModeDisable != UTIL_LPM_NO_BIT_SET )
+    if (OffModeDisable != UTIL_LPM_NO_BIT_SET)
     {
       /**
        * At least one user disallows Off Mode
@@ -208,46 +208,46 @@ UTIL_LPM_Mode_t UTIL_LPM_GetMode( void )
     }
   }
 
-  UTIL_LPM_EXIT_CRITICAL_SECTION( );
+  UTIL_LPM_EXIT_CRITICAL_SECTION();
 
   return mode_selected;
 }
 
-void UTIL_LPM_EnterLowPower( void )
+void UTIL_LPM_EnterLowPower(void)
 {
-  UTIL_LPM_ENTER_CRITICAL_SECTION_ELP( );
+  UTIL_LPM_ENTER_CRITICAL_SECTION_ELP();
 
-  if( StopModeDisable != UTIL_LPM_NO_BIT_SET )
+  if (StopModeDisable != UTIL_LPM_NO_BIT_SET)
   {
     /**
      * At least one user disallows Stop Mode
      * SLEEP mode is required
      */
-      UTIL_PowerDriver.EnterSleepMode( );
-      UTIL_PowerDriver.ExitSleepMode( );
+    UTIL_PowerDriver.EnterSleepMode();
+    UTIL_PowerDriver.ExitSleepMode();
   }
   else
-  { 
-    if( OffModeDisable != UTIL_LPM_NO_BIT_SET )
+  {
+    if (OffModeDisable != UTIL_LPM_NO_BIT_SET)
     {
       /**
        * At least one user disallows Off Mode
        * STOP mode is required
        */
-        UTIL_PowerDriver.EnterStopMode( );
-        UTIL_PowerDriver.ExitStopMode( );
+      UTIL_PowerDriver.EnterStopMode();
+      UTIL_PowerDriver.ExitStopMode();
     }
     else
     {
       /**
        * OFF mode is required
        */
-      UTIL_PowerDriver.EnterOffMode( );
-      UTIL_PowerDriver.ExitOffMode( );
+      UTIL_PowerDriver.EnterOffMode();
+      UTIL_PowerDriver.ExitOffMode();
     }
   }
-  
-  UTIL_LPM_EXIT_CRITICAL_SECTION_ELP( );
+
+  UTIL_LPM_EXIT_CRITICAL_SECTION_ELP();
 }
 
 /**
