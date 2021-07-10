@@ -1,9 +1,8 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : App/app_ble.h
-  * Description        : Application configuration file for BLE Middleware.
-  *
+  * File Name          : App/eddystone_tlm_service.h
+  * Description        :
  ******************************************************************************
   * @attention
   *
@@ -15,58 +14,30 @@
   * the License. You may obtain a copy of the License at:
   *                             www.st.com/SLA0044
   *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef APP_BLE_H
-#define APP_BLE_H
+#ifndef EDDYSTONE_TLM_SERVICE_H
+#define EDDYSTONE_TLM_SERVICE_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "hci_tl.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
 /* Exported types ------------------------------------------------------------*/
-
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
-
 /* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
-
-/* External variables --------------------------------------------------------*/
-/* USER CODE BEGIN EV */
-
-/* USER CODE END EV */
-
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
-/* Exported functions ---------------------------------------------*/
-  void APP_BLE_Init( void );
-
-/* USER CODE BEGIN EF */
-
-/* USER CODE END EF */
+/* Exported Macros -----------------------------------------------------------*/
+/* Exported functions --------------------------------------------------------*/
+void EddystoneTLM_Process(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*APP_BLE_H */
+#endif /* EDDYSTONE_TLM_SERVICE_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -50,7 +50,7 @@
 /**
  * Define IO Authentication
  */
-#define CFG_BONDING_MODE                 (1)
+#define CFG_BONDING_MODE                 (0)
 #define CFG_FIXED_PIN                    (111111)
 #define CFG_USED_FIXED_PIN               (0)
 #define CFG_ENCRYPTION_KEY_SIZE_MAX      (16)
@@ -105,24 +105,13 @@
 #define CFG_GAP_DEVICE_NAME_LENGTH      (8)
 
 /**
- * Define PHY
- */
-#define ALL_PHYS_PREFERENCE                             0x00
-#define RX_2M_PREFERRED                                 0x02
-#define TX_2M_PREFERRED                                 0x02
-#define TX_1M                                           0x01
-#define TX_2M                                           0x02
-#define RX_1M                                           0x01
-#define RX_2M                                           0x02
-
-/**
- *   Identity root key used to derive LTK and CSRK
- */
+*   Identity root key used to derive LTK and CSRK
+*/
 #define CFG_BLE_IRK     {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0}
 
 /**
- * Encryption root key used to derive LTK and CSRK
- */
+* Encryption root key used to derive LTK and CSRK
+*/
 #define CFG_BLE_ERK     {0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21, 0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21}
 
 /**
@@ -139,43 +128,20 @@
 /**< specific parameters */
 /*****************************************************/
 
-#define P2P_SERVER1    1    /*1 = Device is Peripherique*/
-#define P2P_SERVER2    0
-#define P2P_SERVER3    0
-#define P2P_SERVER4    0
-#define P2P_SERVER5    0
-#define P2P_SERVER6    0
-
-#define CFG_DEV_ID_P2P_SERVER1                  (0x83)
-#define CFG_DEV_ID_P2P_SERVER2                  (0x84)
-#define CFG_DEV_ID_P2P_SERVER3                  (0x87)
-#define CFG_DEV_ID_P2P_SERVER4                  (0x88)
-#define CFG_DEV_ID_P2P_SERVER5                  (0x89)
-#define CFG_DEV_ID_P2P_SERVER6                  (0x8A)
-#define CFG_DEV_ID_P2P_ROUTER                   (0x85)
-
-#define  RADIO_ACTIVITY_EVENT   1          /* 1 for OOB Demo */
-
 /**
- * AD Element - Group B Feature
+ * Beacon selection
+ * Beacons are all exclusive
  */
-/* LSB - First Byte */
-#define CFG_FEATURE_THREAD_SWITCH               (0x40)
+#define CFG_EDDYSTONE_UID_BEACON_TYPE   (1<<0)
+#define CFG_EDDYSTONE_URL_BEACON_TYPE   (1<<1)
+#define CFG_EDDYSTONE_TLM_BEACON_TYPE   (1<<2)
+#define CFG_IBEACON                     (1<<3)
 
-/* LSB - Second Byte */
-#define CFG_FEATURE_OTA_REBOOT                  (0x20)
+#define CFG_BEACON_TYPE                 (CFG_EDDYSTONE_TLM_BEACON_TYPE)
 
-#define CONN_L(x) ((int)((x)/0.625f))
-#define CONN_P(x) ((int)((x)/1.25f))
-
-/*  L2CAP Connection Update request parameters used for test only with smart Phone */
-#define L2CAP_REQUEST_NEW_CONN_PARAM             1
-
-#define L2CAP_INTERVAL_MIN              CONN_P(1000) /* 1s */
-#define L2CAP_INTERVAL_MAX              CONN_P(1000) /* 1s */
-#define L2CAP_SLAVE_LATENCY             0x0000
-#define L2CAP_TIMEOUT_MULTIPLIER        0x1F4
-
+#define OTA_BEACON_DATA_ADDRESS         FLASH_BASE + 0x6000
+#define OFFSET_PAYLOAD_LENGTH           9
+#define OFFSET_PAYLOAD_DATA             10
 /* USER CODE BEGIN Specific_Parameters */
 
 /* USER CODE END Specific_Parameters */
@@ -454,13 +420,12 @@
 /** tick timer value in us */
 #define CFG_TS_TICK_VAL           DIVR( (CFG_RTCCLK_DIV * 1000000), LSE_VALUE )
 
-typedef enum {
+typedef enum
+{
   CFG_TIM_PROC_ID_ISR,
   /* USER CODE BEGIN CFG_TimProcID_t */
 
-  CFG_TIM_ONE_SECOND
-
-/* USER CODE END CFG_TimProcID_t */
+  /* USER CODE END CFG_TimProcID_t */
 } CFG_TimProcID_t;
 
 /******************************************************************************
@@ -549,6 +514,7 @@ typedef enum {
 // ST's definition above is wrong when using LSI instead of LSE and you can't change
 // it directly because it will be overwritten by MX when you generate code :(
 #undef CFG_TS_TICK_VAL
+
 #define CFG_TS_TICK_VAL DIVR( (CFG_RTCCLK_DIV * 1000000), LSI_VALUE )
 
 /* USER CODE END Defines */
@@ -565,26 +531,25 @@ typedef enum {
  */
 
 /**< Add in that list all tasks that may send a ACI/HCI command */
-typedef enum {
-  CFG_TASK_ADV_CANCEL_ID, CFG_TASK_SW1_BUTTON_PUSHED_ID,
-#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
-  CFG_TASK_CONN_UPDATE_REG_ID,
-#endif
-  CFG_TASK_HCI_ASYNCH_EVT_ID,
-  /* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
-  CFG_TASK_SEND_TEMPERATURE_NOTIFICATION,
-  /* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
-  CFG_LAST_TASK_ID_WITH_HCICMD, /**< Shall be LAST in the list */
+typedef enum
+{
+    CFG_TASK_BEACON_UPDATE_REQ_ID,
+    CFG_TASK_HCI_ASYNCH_EVT_ID,
+/* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
+
+/* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
+    CFG_LAST_TASK_ID_WITH_HCICMD,                                               /**< Shall be LAST in the list */
 } CFG_Task_Id_With_HCI_Cmd_t;
 
 /**< Add in that list all tasks that never send a ACI/HCI command */
-typedef enum {
-  CFG_FIRST_TASK_ID_WITH_NO_HCICMD = CFG_LAST_TASK_ID_WITH_HCICMD - 1, /**< Shall be FIRST in the list */
-  CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID,
-  /* USER CODE BEGIN CFG_Task_Id_With_NO_HCI_Cmd_t */
+typedef enum
+{
+    CFG_FIRST_TASK_ID_WITH_NO_HCICMD = CFG_LAST_TASK_ID_WITH_HCICMD - 1,        /**< Shall be FIRST in the list */
+    CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID,
+/* USER CODE BEGIN CFG_Task_Id_With_NO_HCI_Cmd_t */
 
-  /* USER CODE END CFG_Task_Id_With_NO_HCI_Cmd_t */
-  CFG_LAST_TASK_ID_WITHO_NO_HCICMD /**< Shall be LAST in the list */
+/* USER CODE END CFG_Task_Id_With_NO_HCI_Cmd_t */
+    CFG_LAST_TASK_ID_WITHO_NO_HCICMD                                            /**< Shall be LAST in the list */
 } CFG_Task_Id_With_NO_HCI_Cmd_t;
 #define CFG_TASK_NBR    CFG_LAST_TASK_ID_WITHO_NO_HCICMD
 
@@ -592,15 +557,19 @@ typedef enum {
  * This is the list of priority required by the application
  * Each Id shall be in the range 0..31
  */
-typedef enum {
-  CFG_SCH_PRIO_0, CFG_PRIO_NBR,
+typedef enum
+{
+    CFG_SCH_PRIO_0,
+    CFG_PRIO_NBR,
 } CFG_SCH_Prio_Id_t;
 
 /**
  * This is a bit mapping over 32bits listing all events id supported in the application
  */
-typedef enum {
-  CFG_IDLEEVT_HCI_CMD_EVT_RSP_ID, CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID,
+typedef enum
+{
+    CFG_IDLEEVT_HCI_CMD_EVT_RSP_ID,
+    CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID,
 } CFG_IdleEvt_Id_t;
 
 /******************************************************************************
@@ -610,11 +579,13 @@ typedef enum {
  * Supported requester to the MCU Low Power Manager - can be increased up  to 32
  * It list a bit mapping of all user of the Low Power Manager
  */
-typedef enum {
-  CFG_LPM_APP, CFG_LPM_APP_BLE,
-/* USER CODE BEGIN CFG_LPM_Id_t */
+typedef enum
+{
+    CFG_LPM_APP,
+    CFG_LPM_APP_BLE,
+  /* USER CODE BEGIN CFG_LPM_Id_t */
 
-/* USER CODE END CFG_LPM_Id_t */
+  /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
 /******************************************************************************

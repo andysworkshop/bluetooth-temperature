@@ -54,6 +54,8 @@ TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 
+const char *PHYSICAL_WEB_URL = "andybrown.me.uk";
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,7 +85,8 @@ static void Config_HSE(void);
  * @brief  The application entry point.
  * @retval int
  */
-int main(void) {
+int main(void)
+{
   /* USER CODE BEGIN 1 */
   /**
    * The OPTVERR flag is wrongly set at power on
@@ -145,7 +148,8 @@ int main(void) {
  * @brief System Clock Configuration
  * @retval None
  */
-void SystemClock_Config(void) {
+void SystemClock_Config(void)
+{
   RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
   RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = { 0 };
@@ -156,7 +160,8 @@ void SystemClock_Config(void) {
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSI1 | RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSI1
+      | RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -168,12 +173,14 @@ void SystemClock_Config(void) {
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV4;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+      {
     Error_Handler();
   }
   /** Configure the SYSCLKSource, HCLK, PCLK1 and PCLK2 clocks dividers
    */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK4 | RCC_CLOCKTYPE_HCLK2 | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK4 | RCC_CLOCKTYPE_HCLK2
+      | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
       | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
@@ -182,13 +189,15 @@ void SystemClock_Config(void) {
   RCC_ClkInitStruct.AHBCLK2Divider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.AHBCLK4Divider = RCC_SYSCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) {
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+      {
     Error_Handler();
   }
   /** Initializes the peripherals clocks
    */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS | RCC_PERIPHCLK_RFWAKEUP | RCC_PERIPHCLK_RTC
-      | RCC_PERIPHCLK_LPTIM1 | RCC_PERIPHCLK_ADC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS | RCC_PERIPHCLK_RFWAKEUP
+      | RCC_PERIPHCLK_RTC | RCC_PERIPHCLK_LPTIM1
+      | RCC_PERIPHCLK_ADC;
   PeriphClkInitStruct.PLLSAI1.PLLN = 12;
   PeriphClkInitStruct.PLLSAI1.PLLP = RCC_PLLP_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLQ = RCC_PLLQ_DIV2;
@@ -200,7 +209,8 @@ void SystemClock_Config(void) {
   PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_HSE_DIV1024;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
   PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE0;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+      {
     Error_Handler();
   }
   /* USER CODE BEGIN Smps */
@@ -213,7 +223,8 @@ void SystemClock_Config(void) {
  * @param None
  * @retval None
  */
-static void MX_ADC1_Init(void) {
+static void MX_ADC1_Init(void)
+{
 
   /* USER CODE BEGIN ADC1_Init 0 */
 
@@ -241,7 +252,8 @@ static void MX_ADC1_Init(void) {
   hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
   hadc1.Init.OversamplingMode = DISABLE;
-  if (HAL_ADC_Init(&hadc1) != HAL_OK) {
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+      {
     Error_Handler();
   }
   /** Configure Regular Channel
@@ -252,28 +264,32 @@ static void MX_ADC1_Init(void) {
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+      {
     Error_Handler();
   }
   /** Configure Regular Channel
    */
   sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = ADC_REGULAR_RANK_2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+      {
     Error_Handler();
   }
   /** Configure Regular Channel
    */
   sConfig.Channel = ADC_CHANNEL_11;
   sConfig.Rank = ADC_REGULAR_RANK_3;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+      {
     Error_Handler();
   }
   /** Configure Regular Channel
    */
   sConfig.Channel = ADC_CHANNEL_12;
   sConfig.Rank = ADC_REGULAR_RANK_4;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+      {
     Error_Handler();
   }
   /* USER CODE BEGIN ADC1_Init 2 */
@@ -290,7 +306,8 @@ static void MX_ADC1_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_IPCC_Init(void) {
+static void MX_IPCC_Init(void)
+{
 
   /* USER CODE BEGIN IPCC_Init 0 */
 
@@ -300,7 +317,8 @@ static void MX_IPCC_Init(void) {
 
   /* USER CODE END IPCC_Init 1 */
   hipcc.Instance = IPCC;
-  if (HAL_IPCC_Init(&hipcc) != HAL_OK) {
+  if (HAL_IPCC_Init(&hipcc) != HAL_OK)
+      {
     Error_Handler();
   }
   /* USER CODE BEGIN IPCC_Init 2 */
@@ -314,7 +332,8 @@ static void MX_IPCC_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_LPTIM1_Init(void) {
+static void MX_LPTIM1_Init(void)
+{
 
   /* USER CODE BEGIN LPTIM1_Init 0 */
 
@@ -332,7 +351,8 @@ static void MX_LPTIM1_Init(void) {
   hlptim1.Init.CounterSource = LPTIM_COUNTERSOURCE_INTERNAL;
   hlptim1.Init.Input1Source = LPTIM_INPUT1SOURCE_GPIO;
   hlptim1.Init.Input2Source = LPTIM_INPUT2SOURCE_GPIO;
-  if (HAL_LPTIM_Init(&hlptim1) != HAL_OK) {
+  if (HAL_LPTIM_Init(&hlptim1) != HAL_OK)
+      {
     Error_Handler();
   }
   /* USER CODE BEGIN LPTIM1_Init 2 */
@@ -346,7 +366,8 @@ static void MX_LPTIM1_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_RF_Init(void) {
+static void MX_RF_Init(void)
+{
 
   /* USER CODE BEGIN RF_Init 0 */
 
@@ -366,7 +387,8 @@ static void MX_RF_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_RTC_Init(void) {
+static void MX_RTC_Init(void)
+{
 
   /* USER CODE BEGIN RTC_Init 0 */
 
@@ -385,7 +407,8 @@ static void MX_RTC_Init(void) {
   hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
   hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
   hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
-  if (HAL_RTC_Init(&hrtc) != HAL_OK) {
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+      {
     Error_Handler();
   }
   /* USER CODE BEGIN RTC_Init 2 */
@@ -399,7 +422,8 @@ static void MX_RTC_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_TIM2_Init(void) {
+static void MX_TIM2_Init(void)
+{
 
   /* USER CODE BEGIN TIM2_Init 0 */
 
@@ -418,26 +442,31 @@ static void MX_TIM2_Init(void) {
   htim2.Init.Period = 10000 - 1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK) {
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+      {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK) {
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+      {
     Error_Handler();
   }
-  if (HAL_TIM_OC_Init(&htim2) != HAL_OK) {
+  if (HAL_TIM_OC_Init(&htim2) != HAL_OK)
+      {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK) {
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+      {
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_TIMING;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+  if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+      {
     Error_Handler();
   }
   /* USER CODE BEGIN TIM2_Init 2 */
@@ -449,7 +478,8 @@ static void MX_TIM2_Init(void) {
 /**
  * Enable DMA controller clock
  */
-static void MX_DMA_Init(void) {
+static void MX_DMA_Init(void)
+{
 
   /* DMA controller clock enable */
   __HAL_RCC_DMAMUX1_CLK_ENABLE();
@@ -467,7 +497,8 @@ static void MX_DMA_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_GPIO_Init(void) {
+static void MX_GPIO_Init(void)
+{
   GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
   /* GPIO Ports Clock Enable */
@@ -550,33 +581,33 @@ static void Reset_IPCC(void) {
 
   LL_C1_IPCC_ClearFlag_CHx(
   IPCC,
-      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
-          | LL_IPCC_CHANNEL_6);
+  LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
+      | LL_IPCC_CHANNEL_6);
 
   LL_C2_IPCC_ClearFlag_CHx(
   IPCC,
-      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
-          | LL_IPCC_CHANNEL_6);
+  LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
+      | LL_IPCC_CHANNEL_6);
 
   LL_C1_IPCC_DisableTransmitChannel(
   IPCC,
-      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
-          | LL_IPCC_CHANNEL_6);
+  LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
+      | LL_IPCC_CHANNEL_6);
 
   LL_C2_IPCC_DisableTransmitChannel(
   IPCC,
-      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
-          | LL_IPCC_CHANNEL_6);
+  LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
+      | LL_IPCC_CHANNEL_6);
 
   LL_C1_IPCC_DisableReceiveChannel(
   IPCC,
-      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
-          | LL_IPCC_CHANNEL_6);
+  LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
+      | LL_IPCC_CHANNEL_6);
 
   LL_C2_IPCC_DisableReceiveChannel(
   IPCC,
-      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
-          | LL_IPCC_CHANNEL_6);
+  LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4 | LL_IPCC_CHANNEL_5
+      | LL_IPCC_CHANNEL_6);
 
   return;
 }
@@ -644,7 +675,8 @@ void HAL_Delay(uint32_t Delay) {
  * @brief  This function is executed in case of error occurrence.
  * @retval None
  */
-void Error_Handler(void) {
+void Error_Handler(void)
+{
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
