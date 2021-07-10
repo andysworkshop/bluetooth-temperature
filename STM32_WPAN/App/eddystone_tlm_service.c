@@ -146,11 +146,14 @@ static tBleStatus EddystoneTLM_Init(EddystoneTLM_InitTypeDef *EddystoneTLM_Init)
 static void EddystoneTLM(void)
 {
   tBleStatus ret;
+  static uint32_t uptime = 0;
+
 #ifdef USE_OTA
   uint32_t data_address = OTA_BEACON_DATA_ADDRESS + OFFSET_PAYLOAD_LENGTH; /* 0x8006009 */
 #endif
 
   EddystoneTLM_InitStruct.AdvertisingCount++;
+  EddystoneTLM_InitStruct.Uptime = uptime;
 
   if (tlm_adv == TRUE)
 
@@ -230,6 +233,8 @@ static void EddystoneTLM(void)
 
     /* Wait 1s */
     HW_TS_Start(TimerTLM_Id, DEFAULT_BEACON_SEC);
+    uptime++;
+
 #endif
   }
   else
@@ -304,6 +309,7 @@ static void EddystoneTLM(void)
     tlm_adv = TRUE;
     /* 5s of URL advertise */
     HW_TS_Start(TimerTLM_Id, DEFAULT_BEACON_SEC * 5);
+    uptime += 5;
 #endif
   }
 }
@@ -329,7 +335,7 @@ void EddystoneTLM_Process(void)
   EddystoneTLM_InitStruct.TLM_Version = 0;
   EddystoneTLM_InitStruct.BatteryVoltage = 3000;
   EddystoneTLM_InitStruct.BeaconTemperature = 0;
-  EddystoneTLM_InitStruct.Uptime = 2000000;
+  EddystoneTLM_InitStruct.Uptime = 0;
   EddystoneTLM_InitStruct.AdvertisingCount = 0;
 
   EddystoneUID_InitStruct.AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS;
@@ -411,7 +417,7 @@ void EddystoneTLM_Process(void)
     EddystoneTLM_InitStruct.TLM_Version = 0;
     EddystoneTLM_InitStruct.BatteryVoltage = 3000;
     EddystoneTLM_InitStruct.BeaconTemperature = 0;
-    EddystoneTLM_InitStruct.Uptime = 2000000;
+    EddystoneTLM_InitStruct.Uptime = 0;
     EddystoneTLM_InitStruct.AdvertisingCount = 0;
 
     EddystoneUID_InitStruct.AdvertisingInterval = ADVERTISING_INTERVAL_IN_MS;
