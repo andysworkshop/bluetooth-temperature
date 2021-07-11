@@ -507,15 +507,16 @@ static void GetTemperature() {
 
   // read the battery voltage [0] and the thermistor [1]
 
-  uint32_t adcReadings[2];
+  volatile uint16_t adcReadings[2];
   ConversionComplete = FALSE;
-  HAL_ADC_Start_DMA(&hadc1, adcReadings, 2);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adcReadings, 2);
   while (!ConversionComplete)
     ;
+  HAL_ADC_Stop_DMA(&hadc1);
 
   // convert the battery voltage in mV
 
-  uint32_t batteryVoltage = (adcReadings[0] * 1800) / 4096;
+  uint32_t batteryVoltage = ((adcReadings[0] * 1800) / 4096) * 2;
 
   // get the voltage across the thermocouple. 10005 is the measured value of the constant
   // resistor in the divider
