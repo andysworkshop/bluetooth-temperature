@@ -69,8 +69,9 @@
 /* USER CODE BEGIN PD */
 
 extern ADC_HandleTypeDef hadc1;
-extern void SetBeaconTemperature(uint16_t temperature);
+extern void SetBeaconTemperatureAndVoltage(uint16_t temperature, uint16_t batteryVoltage);
 static uint8_t adcTimerId;
+static volatile uint8_t ConversionComplete;
 
 /* USER CODE END PD */
 
@@ -504,17 +505,22 @@ const uint8_t* BleGetBdAddress(void)
 
 static void GetTemperature() {
 
-  // read the thermistors from the ADC and convert to temperature in Celsius
+  // read the battery voltage [0] and the thermistor [1]
 
-  HAL_ADC_Start(&hadc1); // start the adc
-  HAL_ADC_PollForConversion(&hadc1, 100); // poll for conversion
-  uint32_t adcReading = HAL_ADC_GetValue(&hadc1); // get the adc value
-  HAL_ADC_Stop(&hadc1); // stop adc
+  uint32_t adcReadings[2];
+  ConversionComplete = FALSE;
+  HAL_ADC_Start_DMA(&hadc1, adcReadings, 2);
+  while (!ConversionComplete)
+    ;
+
+  // convert the battery voltage in mV
+
+  uint32_t batteryVoltage = (adcReadings[0] * 1800) / 4096;
 
   // get the voltage across the thermocouple. 10005 is the measured value of the constant
   // resistor in the divider
 
-  float voltage = 1.8 * (float) adcReading / 4096.0;
+  float voltage = 1.8 * (float) adcReadings[1] / 4096.0;
 
   // calculate resistance of thermistor
 
@@ -527,7 +533,11 @@ static void GetTemperature() {
   uint8_t hi = (uint8_t) temperature;
   uint8_t lo = (uint8_t) (100 * (temperature - hi) + 0.5);
 
-  SetBeaconTemperature((hi << 8) | lo);
+  SetBeaconTemperatureAndVoltage((hi << 8) | lo, batteryVoltage);
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+  ConversionComplete = TRUE;
 }
 
 /* USER CODE END FD_LOCAL_FUNCTION */

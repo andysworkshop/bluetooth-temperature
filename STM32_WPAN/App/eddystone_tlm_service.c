@@ -435,6 +435,7 @@ void EddystoneTLM_Process(void)
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
-void SetBeaconTemperature(uint16_t temperature) {
+void SetBeaconTemperatureAndVoltage(uint16_t temperature, uint16_t batteryVoltage) {
   EddystoneTLM_InitStruct.BeaconTemperature = temperature;
+  EddystoneTLM_InitStruct.BatteryVoltage = batteryVoltage;
 }
